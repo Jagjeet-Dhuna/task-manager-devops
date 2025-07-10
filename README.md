@@ -26,16 +26,42 @@ By working with this project, you'll gain hands-on experience with:
 
 ## Prerequisites
 
-Before starting, ensure you have:
-- Windows 10/11 (or Linux/macOS)
+### For Local Development
+- Windows 10/11, macOS, or Linux
 - Python 3.8+
 - PostgreSQL (or SQLite for testing)
-- Administrator privileges (for PostgreSQL installation)
 - Internet connection
+
+### For Complete DevOps Labs
+- **AWS Account** with appropriate permissions (free tier sufficient)
+- **GitHub Account** for CI/CD integration
+- **Administrator/sudo access** for tool installations
+- **Basic command line** knowledge
+- **6-8 hours** to complete all labs
+
+### Tools Installed in Lab 01
+- AWS CLI
+- Terraform
+- Docker Desktop
+- Git
+
+## 🚀 Getting Started
+
+### Option 1: Quick Local Development
+**Perfect for testing the application quickly**
+
+### Option 2: Complete DevOps Learning Path
+**For production-ready deployment and DevOps skills**
+
+📚 **[Begin Lab Series →](./Instructions/README.md)**
+
+*The labs build upon the local setup, so complete the local development setup first.*
+
+---
 
 ## 🚀 Quick Start Guide
 
-### Option 1: Production-Ready Setup (PostgreSQL)
+### Production-Ready Setup (PostgreSQL)
 
 **For students learning production deployments**
 
@@ -414,45 +440,68 @@ Common HTTP status codes:
 - **PowerShell:** Press `Ctrl + C`
 - **Background Process:** Use Task Manager to end Python processes
 
+## 🎓 DevOps Lab Series Overview
+
+This project includes comprehensive hands-on labs that teach modern DevOps practices:
+
+| Lab | Focus Area | Duration | Skills Learned |
+|-----|------------|----------|----------------|
+| [01](./Instructions/01-environment-setup-containerization.md) | Environment Setup | 60 min | AWS CLI, Terraform, Docker, Git |
+| [02](./Instructions/02-infrastructure-foundation-terraform.md) | Infrastructure Foundation | 90 min | VPC, Security Groups, Terraform Modules |
+| [03](./Instructions/03-database-infrastructure-management.md) | Database Management | 45 min | RDS, Backup, Monitoring |
+| [04](./Instructions/04-compute-infrastructure-load-balancing.md) | Compute & Load Balancing | 75 min | EC2, Auto Scaling, ALB |
+| [05](./Instructions/05-cicd-pipeline-implementation.md) | CI/CD Pipeline | 90 min | GitHub Actions, Testing, Security |
+| [06](./Instructions/06-monitoring-logging-alerting.md) | Monitoring & Alerting | 60 min | CloudWatch, Dashboards, Alerts |
+| [07](./Instructions/07-multi-environment-deployment-management.md) | Multi-Environment | 45 min | Staging, Production, DR |
+
+**Total Time: 6-8 hours** | **Skill Level: Beginner to Intermediate**
+
 ## 📚 DevOps Learning Path
 
-Once you have the application running locally, progress through these DevOps practices:
+Once you have the application running locally, progress through these comprehensive labs:
 
-### Phase 1: Containerization
-- **Docker**: Create Dockerfile and docker-compose.yml
-- **Multi-stage builds**: Optimize image size
-- **Container orchestration**: Kubernetes basics
+### 🎓 Complete Lab Series (6-8 hours total)
+Follow the detailed lab instructions in the `Instructions/` folder:
 
-### Phase 2: CI/CD Pipeline
-- **GitHub Actions**: Automated testing and deployment
-- **Build automation**: Linting, testing, security scanning
-- **Deployment strategies**: Blue-green, rolling updates
+**Phase 1: Foundation (2.5 hours)**
+- **Lab 01**: Environment Setup and Application Containerization (60 min)
+- **Lab 02**: Infrastructure Foundation with Terraform (90 min)
 
-### Phase 3: Cloud Deployment
-- **AWS**: ECS, RDS, Load Balancer
-- **Azure**: Container Instances, Azure Database
-- **GCP**: Cloud Run, Cloud SQL
-- **Infrastructure as Code**: Terraform, CloudFormation
+**Phase 2: Infrastructure (2 hours)**  
+- **Lab 03**: Database Infrastructure and Management (45 min)
+- **Lab 04**: Compute Infrastructure and Load Balancing (75 min)
 
-### Phase 4: Monitoring & Observability
-- **Application monitoring**: Prometheus, Grafana
-- **Log aggregation**: ELK Stack, CloudWatch
-- **Health checks**: Automated monitoring and alerting
-- **Performance optimization**: Database tuning, caching
+**Phase 3: Automation (2.5 hours)**
+- **Lab 05**: CI/CD Pipeline Implementation (90 min)
+- **Lab 06**: Monitoring, Logging, and Alerting (60 min)
 
-### Phase 5: Production Readiness
-- **Security**: HTTPS, secrets management, vulnerability scanning
-- **Scalability**: Auto-scaling, load balancing
-- **Backup & Recovery**: Database backups, disaster recovery
-- **Compliance**: Security policies, audit logging
+**Phase 4: Production Management (45 min)**
+- **Lab 07**: Multi-Environment Deployment and Management (45 min)
+
+📖 **[Start with Lab 01: Environment Setup](./Instructions/01-environment-setup-containerization.md)**
 
 ## 🎓 For Instructors
 
-This project is designed to be:
-- **Modular**: Each component can be taught independently
-- **Scalable**: From simple local setup to complex cloud architecture
-- **Realistic**: Mirrors real-world enterprise applications
-- **Documented**: Comprehensive guides for each learning phase
+This project provides a complete DevOps curriculum:
+
+- **Structured Learning**: 7 progressive labs with clear objectives
+- **Hands-on Practice**: Real AWS infrastructure deployment
+- **Industry Standards**: Modern tools and practices
+- **Flexible Delivery**: Can be completed individually or in groups
+- **Assessment Ready**: Each lab includes verification steps
+
+**Teaching Resources:**
+- Detailed step-by-step instructions
+- Troubleshooting guides
+- Time estimates for planning
+- Prerequisites clearly defined
+- Learning objectives for each lab
+
+**Recommended Delivery:**
+- **Week 1-2**: Labs 01-02 (Foundation)
+- **Week 3-4**: Labs 03-04 (Infrastructure)  
+- **Week 5-6**: Labs 05-06 (Automation)
+- **Week 7**: Lab 07 (Production Management)
 
 ## 🤝 Contributing
 
