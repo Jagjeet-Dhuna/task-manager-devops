@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Task Manager{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Task Manager Dashboard</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Total Users</h5>
+                                <h2 id="total-users">{{ stats.total_users }}</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Total Tasks</h5>
+                                <h2 id="total-tasks">{{ stats.total_tasks }}</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-tasks fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Pending Tasks</h5>
+                                <h2 id="pending-tasks">{{ stats.pending_tasks }}</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Completed Tasks</h5>
+                                <h2 id="completed-tasks">{{ stats.completed_tasks }}</h2>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check-circle fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-list"></i> Recent Tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_tasks %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Assigned To</th>
+                                            <th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in recent_tasks %}
+                                        <tr>
+                                            <td>{{ task.title }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if task.status.value == 'completed' else 'warning' if task.status.value == 'in_progress' else 'secondary' }}">
+                                                    {{ task.status.value.replace('_', ' ').title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ 'danger' if task.priority.value == 'high' else 'warning' if task.priority.value == 'medium' else 'info' }}">
+                                                    {{ task.priority.value.title() }}
+                                                </span>
+                                            </td>
+                                            <td>{{ task.user.username }}</td>
+                                            <td>{{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No tasks found. <a href="{{ url_for('web.tasks') }}">Create your first task</a></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-pie"></i> Task Status Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="taskStatusChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5><i class="fas fa-info-circle"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('web.tasks') }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Create New Task
+                            </a>
+                            <a href="{{ url_for('web.users') }}" class="btn btn-success">
+                                <i class="fas fa-user-plus"></i> Add New User
+                            </a>
+                            <a href="{{ url_for('health_check') }}" class="btn btn-info">
+                                <i class="fas fa-heartbeat"></i> Check System Health
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Task Status Chart
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartElement = document.getElementById('taskStatusChart');
+        if (chartElement && typeof Chart !== 'undefined') {
+            try {
+                const ctx = chartElement.getContext('2d');
+                const taskStatusChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pending', 'In Progress', 'Completed'],
+                        datasets: [{
+                            data: [{{ stats.pending_tasks }}, {{ stats.in_progress_tasks }}, {{ stats.completed_tasks }}],
+                            backgroundColor: ['#6c757d', '#ffc107', '#198754']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to initialize chart:', error);
+            }
+        }
+    });
+</script>
+{% endblock %}

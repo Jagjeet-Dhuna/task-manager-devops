@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - Task Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Tasks</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal">
+        <i class="fas fa-plus"></i> New Task
+    </button>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {{ 'selected' if request.args.get('status') == 'pending' }}>Pending</option>
+                            <option value="in_progress" {{ 'selected' if request.args.get('status') == 'in_progress' }}>In Progress</option>
+                            <option value="completed" {{ 'selected' if request.args.get('status') == 'completed' }}>Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by Priority</label>
+                        <select name="priority" class="form-select">
+                            <option value="">All Priorities</option>
+                            <option value="high" {{ 'selected' if request.args.get('priority') == 'high' }}>High</option>
+                            <option value="medium" {{ 'selected' if request.args.get('priority') == 'medium' }}>Medium</option>
+                            <option value="low" {{ 'selected' if request.args.get('priority') == 'low' }}>Low</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Filter by User</label>
+                        <select name="user_id" class="form-select">
+                            <option value="">All Users</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}" {{ 'selected' if request.args.get('user_id') == user.id|string }}>{{ user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-outline-primary">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5>Task Summary</h5>
+                <p class="mb-1">Total: <strong>{{ pagination.total }}</strong></p>
+                <p class="mb-0">Showing {{ tasks|length }} of {{ pagination.total }} tasks</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if tasks %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Assigned To</th>
+                            <th>Due Date</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td><strong>{{ task.title }}</strong></td>
+                            <td>{{ task.description[:50] + '...' if task.description and task.description|length > 50 else task.description or '-' }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if task.status.value == 'completed' else 'warning' if task.status.value == 'in_progress' else 'secondary' }}">
+                                    {{ task.status.value.replace('_', ' ').title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'danger' if task.priority.value == 'high' else 'warning' if task.priority.value == 'medium' else 'info' }}">
+                                    {{ task.priority.value.title() }}
+                                </span>
+                            </td>
+                            <td>{{ task.user.username }}</td>
+                            <td>{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '-' }}</td>
+                            <td>{{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="editTask({{ task.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteTask({{ task.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('web.tasks', page=pagination.prev_num, **request.args) }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in pagination.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != pagination.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('web.tasks', page=page_num, **request.args) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('web.tasks', page=pagination.next_num, **request.args) }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <h4>No tasks found</h4>
+                <p class="text-muted">Create your first task to get started!</p>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#taskModal">
+                    <i class="fas fa-plus"></i> Create Task
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel">New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="taskForm">
+                <div class="modal-body">
+                    <input type="hidden" id="taskId" name="id">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <label for="user_id" class="form-label">Assign To *</label>
+                            <select class="form-select" id="user_id" name="user_id" required>
+                                <option value="">Select User</option>
+                                {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="due_date" class="form-label">Due Date</label>
+                            <input type="datetime-local" class="form-control" id="due_date" name="due_date">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Task management functions
+function editTask(taskId) {
+    fetch(`/api/tasks/${taskId}`)
+        .then(response => response.json())
+        .then(task => {
+            document.getElementById('taskId').value = task.id;
+            document.getElementById('title').value = task.title;
+            document.getElementById('description').value = task.description || '';
+            document.getElementById('status').value = task.status;
+            document.getElementById('priority').value = task.priority;
+            document.getElementById('user_id').value = task.user_id;
+            
+            if (task.due_date) {
+                const date = new Date(task.due_date);
+                document.getElementById('due_date').value = date.toISOString().slice(0, 16);
+            }
+            
+            document.getElementById('taskModalLabel').textContent = 'Edit Task';
+            if (typeof bootstrap !== 'undefined') {
+                new bootstrap.Modal(document.getElementById('taskModal')).show();
+            } else {
+                console.error('Bootstrap is not loaded');
+            }
+        });
+}
+
+function deleteTask(taskId) {
+    if (confirm('Are you sure you want to delete this task?')) {
+        fetch(`/api/tasks/${taskId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                location.reload();
+            } else {
+                alert('Error deleting task');
+            }
+        });
+    }
+}
+
+// Form submission
+document.getElementById('taskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Validate required fields
+    const title = document.getElementById('title').value.trim();
+    const userId = document.getElementById('user_id').value;
+    
+    if (!title) {
+        alert('Title is required');
+        return;
+    }
+    
+    if (!userId) {
+        alert('Please select a user');
+        return;
+    }
+    
+    const formData = new FormData(this);
+    const taskId = formData.get('id');
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        if (key !== 'id' && value) {
+            data[key] = value;
+        }
+    }
+    
+    const url = taskId ? `/api/tasks/${taskId}` : '/api/tasks';
+    const method = taskId ? 'PUT' : 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.id) {
+            location.reload();
+        } else {
+            alert('Error saving task: ' + (data.error || 'Unknown error'));
+        }
+    });
+});
+
+// Reset form when modal closes
+document.getElementById('taskModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('taskForm').reset();
+    document.getElementById('taskId').value = '';
+    document.getElementById('taskModalLabel').textContent = 'New Task';
+});
+</script>
+{% endblock %}
