@@ -480,29 +480,6 @@ Follow the detailed lab instructions in the `Instructions/` folder:
 
 📖 **[Start with Lab 01: Environment Setup](./Instructions/01-environment-setup-containerization.md)**
 
-## 🎓 For Instructors
-
-This project provides a complete DevOps curriculum:
-
-- **Structured Learning**: 7 progressive labs with clear objectives
-- **Hands-on Practice**: Real AWS infrastructure deployment
-- **Industry Standards**: Modern tools and practices
-- **Flexible Delivery**: Can be completed individually or in groups
-- **Assessment Ready**: Each lab includes verification steps
-
-**Teaching Resources:**
-- Detailed step-by-step instructions
-- Troubleshooting guides
-- Time estimates for planning
-- Prerequisites clearly defined
-- Learning objectives for each lab
-
-**Recommended Delivery:**
-- **Week 1-2**: Labs 01-02 (Foundation)
-- **Week 3-4**: Labs 03-04 (Infrastructure)  
-- **Week 5-6**: Labs 05-06 (Automation)
-- **Week 7**: Lab 07 (Production Management)
-
 ## 🤝 Contributing
 
 This is an educational project. Feel free to:
@@ -510,7 +487,3 @@ This is an educational project. Feel free to:
 - Submit issues for bugs or improvements
 - Create pull requests for enhancements
 - Share your deployment experiences
-
-## 📄 License
-
-This project is created for DevOps practice and learning purposes. Open source and free to use for educational activities.
